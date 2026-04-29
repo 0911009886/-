@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>公主閱讀王國</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+body{
+  font-family: sans-serif;
+  background: linear-gradient(#f8f1e7,#fbe4ec);
+  text-align:center;
+  margin:0;
+}
+
+h1{
+  margin-top:15px;
+}
+
+.card{
+  background:white;
+  margin:12px;
+  padding:15px;
+  border-radius:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 👑 公主 */
+.princess{
+  font-size:60px;
+  animation: float 2s infinite ease-in-out;
+}
+
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+  100%{transform:translateY(0)}
+}
+
+/* 按鈕 */
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:15px;
+  background:#ffb6c1;
+  font-size:16px;
+  margin-top:10px;
+}
+
+/* 地圖 */
+.map{
+  display:flex;
+  justify-content:space-around;
+  margin-top:10px;
+}
+
+.node{
+  font-size:22px;
+  opacity:0.3;
+}
+
+.unlocked{
+  opacity:1;
+}
+
+/* 衣櫃 */
+.closet span{
+  font-size:28px;
+  margin:5px;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>👑 公主閱讀王國</h1>
+
+<div class="card">
+  <div id="princess" class="princess">👸</div>
+  <p id="outfit">今天穿：👗</p>
+</div>
+
+<div class="card">
+  <h2>📖 今日任務</h2>
+  <p id="task"></p>
+  <button onclick="completeTask()">完成任務</button>
+</div>
+
+<div class="card">
+  <h2>⭐ 星星</h2>
+  <p id="stars">0</p>
+</div>
+
+<div class="card">
+  <h2>🎁 寶箱</h2>
+  <button onclick="openChest()">開寶箱</button>
+</div>
+
+<div class="card">
+  <h2>🗺️ 地圖</h2>
+  <div class="map">
+    <div id="m1" class="node">🏡</div>
+    <div id="m2" class="node">🌸</div>
+    <div id="m3" class="node">🦄</div>
+    <div id="m4" class="node">🏰</div>
+    <div id="m5" class="node">🌙</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>👗 換裝</h2>
+  <div class="closet">
+    <span onclick="changeOutfit('👗')">👗</span>
+    <span onclick="changeOutfit('👑')">👑</span>
+    <span onclick="changeOutfit('🪄')">🪄</span>
+    <span onclick="changeOutfit('🌸')">🌸</span>
+  </div>
+</div>
+
+<script>
+
+/* ⭐ 初始化資料 */
+let stars = localStorage.getItem("stars") || 0;
+let day = localStorage.getItem("day") || 1;
+let outfit = localStorage.getItem("outfit") || "👗";
+
+document.getElementById("stars").innerText = stars;
+document.getElementById("outfit").innerText = "今天穿：" + outfit;
+
+/* 📖 任務池 */
+let tasks = [
+ "幫公主讀一本故事書 📚",
+ "說一句：我很勇敢！ 🎤",
+ "畫出今天的角色 🎨",
+ "抱抱書本說謝謝 ❤️",
+ "講一段故事給媽媽 👩"
+];
+
+document.getElementById("task").innerText = tasks[day % tasks.length];
+
+/* ✅ 完成任務 */
+function completeTask(){
+  stars++;
+  day++;
+
+  localStorage.setItem("stars", stars);
+  localStorage.setItem("day", day);
+
+  document.getElementById("stars").innerText = stars;
+  document.getElementById("task").innerText = tasks[day % tasks.length];
+
+  unlockMap();
+
+  alert("✨ 魔法成功！公主變更漂亮了！");
+}
+
+/* 🗺️ 地圖解鎖 */
+function unlockMap(){
+  let level = Math.floor(stars/3)+1;
+
+  for(let i=1;i<=level;i++){
+    let el = document.getElementById("m"+i);
+    if(el) el.classList.add("unlocked");
+  }
+}
+
+unlockMap();
+
+/* 👗 換裝 */
+function changeOutfit(o){
+  outfit = o;
+  localStorage.setItem("outfit", o);
+  document.getElementById("outfit").innerText = "今天穿：" + o;
+}
+
+/* 🎁 寶箱 */
+function openChest(){
+  if(stars < 3){
+    alert("需要3顆星星才能開寶箱喔！");
+    return;
+  }
+
+  stars -= 3;
+
+  let rewards = ["👑","👗","🪄","💎","🌈"];
+  let reward = rewards[Math.floor(Math.random()*rewards.length)];
+
+  alert("🎁 你獲得了：" + reward);
+
+  localStorage.setItem("stars", stars);
+  document.getElementById("stars").innerText = stars;
+}
+
+</script>
+
+</body>
+</html>
